@@ -12,13 +12,6 @@ Dengan memprediksi permintaan di masa yang akan datang diharapkan dapat membantu
 - Using data mining techniques for bike sharing demand prediction in metropolitan city
 VE Sathishkumar, J Park, Y Cho - Computer Communications, 2020 - Elsevier
 
-
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Jelaskan mengapa dan bagaimana masalah tersebut harus diselesaikan
-- Menyertakan hasil riset terkait atau referensi. Referensi yang diberikan harus berasal dari sumber yang kredibel dan author yang jelas.
-  
-  Format Referensi: [Judul Referensi](https://scholar.google.com/) 
-
 ## Business Understanding
 
 Kondisi iklim yang berubah-ubah menjadikan permintaan sepeda yang berbeda-beda di setiap harinya. Permintaan sepeda naik atau turun seiring dengan perubahan iklim.
@@ -37,57 +30,68 @@ Menjelaskan tujuan dari pernyataan masalah:
 
 
 ## Solution Statements
-- Membangun model regresi dengan jumlah permintaan sepeda sebagai target.
-
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Menambahkan bagian “Solution Statement” yang menguraikan cara untuk meraih goals. Bagian ini dibuat dengan ketentuan sebagai berikut: 
-
-    ### Solution statements
-    - Mengajukan 2 atau lebih solution statement. Misalnya, menggunakan dua atau lebih algoritma untuk mencapai solusi yang diinginkan atau melakukan improvement pada baseline model dengan hyperparameter tuning.
-    - Solusi yang diberikan harus dapat terukur dengan metrik evaluasi.
+- Membangun model dengan menggunakan algoritma LSTM 
 
 ## Data Understanding
-Paragraf awal bagian ini menjelaskan informasi mengenai data yang Anda gunakan dalam proyek. Sertakan juga sumber atau tautan untuk mengunduh dataset. Contoh: [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Restaurant+%26+consumer+data).
+Data yang digunakan adalah dataset *Bike Sharing Washington DC*. Dataset ini dapat digunakan untuk memprediksi permintaan untuk menghindari kelebihan atau kekurangan pasokan. Rentang waktu data dari 1 Januari 2011 hingga 31 Desember 2018.
+
+Dataset: *[Bike Sharing Washington DC](httpshttps://www.kaggle.com/datasets/juliajemals/bike-sharing-washington-dc)*.
 
 Selanjutnya uraikanlah seluruh variabel atau fitur pada data. Sebagai contoh:  
 
-### Variabel-variabel pada Restaurant UCI dataset adalah sebagai berikut:
-- accepts : merupakan jenis pembayaran yang diterima pada restoran tertentu.
-- cuisine : merupakan jenis masakan yang disajikan pada restoran.
-- dst
+### Variabel-variabel pada Bike Sharing Washington DC dataset adalah sebagai berikut:
+- date : tanggal dengan format yyyy-mm-dd
+- temp_avg : suhu harian rata-rata dalam derajat Celcius
+- temp_min : suhu harian minimum dalam derajat Celcius
+- temp_max : suhu harian maksimum dalam derajat Celcius
+- temp_observ : suhu pada saat pengamatan dalam derajat Celcius
+- precip : jumlah curah hujan dalam mm
+- wind : kecepatan angin dalam meter per detik
+- wt_fog : kabut jenis cuaca, kabut es, atau kabut beku (mungkin termasuk kabut tebal)
+- wtheavyfog : jenis cuaca kabut tebal atau kabut beku yang naik-turun (tidak selalu dibedakan dari kabut)
+- wt_thunder : jenis cuaca guntur
+- wt_sleet : butiran es jenis cuaca, hujan es, butiran salju, atau hujan es kecil
+- wt_hail : hujan es jenis cuaca (mungkin termasuk hujan es kecil)
+- wt_glaze : lapisan atau rima jenis cuaca
+- wt_haze : tipe cuaca asap atau kabut
+- wtdriftsnow : jenis cuaca yang bertiup atau salju yang melayang
+- wthighwind : jenis cuaca angin kencang atau merusak
+- wt_mist : kabut jenis cuaca
+- wt_drizzle : gerimis jenis cuaca
+- wt_rain : tipe cuaca hujan (mungkin termasuk hujan beku, gerimis, dan gerimis beku)
+- wtfreezerain : tipe cuaca hujan beku
+- wt_snow : salju jenis cuaca, butiran salju, atau kristal es
+- wtgroundfog : kabut tanah jenis cuaca
+- wticefog : kabut es jenis cuaca atau kabut beku
+- wtfreezedrizzle : gerimis beku jenis cuaca
+- wt_unknown : tipe cuaca sumber presipitasi tidak diketahui
+- casual : jumlah pelanggan yang tidak terdaftar
+- registered : jumlah pelanggan terdaftar
+- total_cust : jumlah pelanggan terdaftar dan biasa
+- holiday : menunjukkan apakah hari itu hari libur atau tidak
 
-**Rubrik/Kriteria Tambahan (Opsional)**:
-- Melakukan beberapa tahapan yang diperlukan untuk memahami data, contohnya teknik visualisasi data atau exploratory data analysis.
+Melakukan Visualisasi data untuk melihat korelasi dengan target data
+![Alt text](https://raw.githubusercontent.com/yunusffz/ml-terapan-proyek-1/main/images/visualisasi-data.PNG "Title")
+
+![Alt text](https://raw.githubusercontent.com/yunusffz/ml-terapan-proyek-1/main/images/total-cust.PNG "Title")
+
 
 ## Data Preparation
-Pada bagian ini Anda menerapkan dan menyebutkan teknik data preparation yang dilakukan. Teknik yang digunakan pada notebook dan laporan harus berurutan.
-
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan proses data preparation yang dilakukan
-- Menjelaskan alasan mengapa diperlukan tahapan data preparation tersebut.
+Tahapan data preparation yang dilakukan:
+- Penghapusan Kolom yang tidak pakai: untuk mempercepat proses pembelajaran model
+- Pengisian Kolom N/A dengan nilainya: Tahapan ini diisi dengan 0 karena bertipe boolean.
+- Normalisasi Data: Untuk mereduksi penyimpangan nilai pada rentang yang sama
+- Penghapusan Outlier: agar data linear dan meningkatkan akurasi saat pembelajar model
 
 ## Modeling
-Tahapan ini membahas mengenai model machine learning yang digunakan untuk menyelesaikan permasalahan. Anda perlu menjelaskan tahapan dan parameter yang digunakan pada proses pemodelan.
+Pada Tahapan ini digunakan model neural network. Karena data yang digunakan merupakan data time-series maka digunakan  LSTM (Long Short Term Memory) untuk pemodel data time series. Digunakan LSTM karena mampu mengatasi ketergantungan jangka panjang (long term dependencies) pada masukannya.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan kelebihan dan kekurangan dari setiap algoritma yang digunakan.
-- Jika menggunakan satu algoritma pada solution statement, lakukan proses improvement terhadap model dengan hyperparameter tuning. **Jelaskan proses improvement yang dilakukan**.
-- Jika menggunakan dua atau lebih algoritma pada solution statement, maka pilih model terbaik sebagai solusi. **Jelaskan mengapa memilih model tersebut sebagai model terbaik**.
+Terdapat tahapan penyesuaian parameter sebagai berikut:
+- Melakukan drop sebesar 20% setelah lapisan pertama untuk mengurangi overfitting
+- Mengubah hyper parameter menjadi 0.01 
 
 ## Evaluation
-Pada bagian ini anda perlu menyebutkan metrik evaluasi yang digunakan. Lalu anda perlu menjelaskan hasil proyek berdasarkan metrik evaluasi yang digunakan.
+Metrik yang digunakan pada variabel kontinyu ini digunakan metrik MAE (Margin Absolute Error).
+MAE mengukur besarnya rata-rata kesalahan dalam serangkaian prediksi, tanpa mempertimbangkan arahnya. Ini adalah rata-rata sampel uji dari perbedaan absolut antara prediksi dan pengamatan aktual di mana semua perbedaan individu memiliki bobot yang sama.
 
-Sebagai contoh, Anda memiih kasus klasifikasi dan menggunakan metrik **akurasi, precision, recall, dan F1 score**. Jelaskan mengenai beberapa hal berikut:
-- Penjelasan mengenai metrik yang digunakan
-- Menjelaskan hasil proyek berdasarkan metrik evaluasi
-
-Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
-
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
-
-**---Ini adalah bagian akhir laporan---**
-
-_Catatan:_
-- _Anda dapat menambahkan gambar, kode, atau tabel ke dalam laporan jika diperlukan. Temukan caranya pada contoh dokumen markdown di situs editor [Dillinger](https://dillinger.io/), [Github Guides: Mastering markdown](https://guides.github.com/features/mastering-markdown/), atau sumber lain di internet. Semangat!_
-- Jika terdapat penjelasan yang harus menyertakan code snippet, tuliskan dengan sewajarnya. Tidak perlu menuliskan keseluruhan kode project, cukup bagian yang ingin dijelaskan saja.
+Pada proyek ini diset MAE sebesar 30%, ketika MAE pada prediksi berada dibawah 30% maka model dianggap sudah sesuai dengan target. Ketika nilai MAE diatas 30% maka akan terus dilakukan pembelajaran sebanyak epoch yang telah di set.
