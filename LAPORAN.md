@@ -82,6 +82,7 @@ Tahapan data preparation yang dilakukan:
 - Pengisian Kolom N/A dengan nilainya: Tahapan ini diisi dengan 0 karena bertipe boolean.
 - Normalisasi Data: Untuk mereduksi penyimpangan nilai pada rentang yang sama
 - Penghapusan Outlier: agar data linear dan meningkatkan akurasi saat pembelajar model
+- Split data train dan data test: Data test sebesar 20% untuk evaluasi model nantinya
 
 ## Modeling
 Pada Tahapan ini digunakan model neural network. Karena data yang digunakan merupakan data time-series maka digunakan  LSTM (Long Short Term Memory) untuk pemodel data time series. Digunakan LSTM karena mampu mengatasi ketergantungan jangka panjang (long term dependencies) pada masukannya.
