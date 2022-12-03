@@ -22,35 +22,7 @@ from sklearn import preprocessing
 df = pd.read_csv('bike_sharing_dataset.csv')
 df.head()
 
-"""Melihat Type data dan menyelaraskan tipe datanya"""
-
-print(df.dtypes)
-df['total_cust'] = df['total_cust'].astype(float)
-
-"""drop kolom yang tidak dipakai ( pemilihan kolom paling berpengaruh )"""
-
-df = df.drop(columns=['casual', 'registered', 'temp_avg'])
-
-"""Normalisasi Data Dengan Standar Deviasi"""
-
-# standar deviasi
-
-df[['temp_min','temp_max', 'temp_observ', 'precip']] = preprocessing.StandardScaler().fit_transform(df[['temp_min','temp_max', 'temp_observ', 'precip']].values)
-
-"""Lihat Sekilas Data yang sudah di normalisasi"""
-
-df.head()
-
-"""Cleansing Data dengan mengubah Nilai NAN dengan 0 (sesuai dengan fiturnya), lalu melihat sekilas datanya kembali"""
-
-df = df.fillna(0)
-df.isnull().sum()
-df.head()
-
 """visualisasikan data untuk melihat pola nya."""
-
-q = df["total_cust"].quantile(0.99)
-df = df[df["total_cust"] < q]
 
 dates = df['date'].values
 viz_data  = df['total_cust'].values
@@ -59,20 +31,9 @@ viz_data  = df['total_cust'].values
 plt.figure(figsize=(15,5))
 plt.plot(dates, viz_data)
 plt.title('Total Customer',
-          fontsize=20);
+          fontsize=8);
 
-"""visualisasi atribut precip untuk melihat pola data"""
-
-dates = df['date'].values
-viz_data  = df['precip'].values
- 
- 
-plt.figure(figsize=(15,5))
-plt.plot(dates, viz_data)
-plt.title('Precip',
-          fontsize=20);
-
-"""Visualisasi Temp Observ untuk melihat sekilah pola data"""
+"""Visualisasi Temp Observe untuk melihat sekilah pola data"""
 
 dates = df['date'].values
 viz_data  = df['temp_observ'].values
@@ -83,16 +44,20 @@ plt.plot(dates, viz_data)
 plt.title('Temp Observe',
           fontsize=20);
 
-"""Visualisai fitur wind untuk melihat pola datanya"""
+"""Cleansing Data dengan mengubah Nilai NAN dengan 0 (sesuai dengan fiturnya), lalu melihat sekilas datanya kembali"""
 
-dates = df['date'].values
-viz_data  = df['wind'].values
- 
- 
-plt.figure(figsize=(15,5))
-plt.plot(dates, viz_data)
-plt.title('Wind',
-          fontsize=20);
+df = df.fillna(0)
+df.head()
+
+"""drop kolom yang tidak dipakai ( pemilihan kolom paling berpengaruh )"""
+
+df = df.drop(columns=['wind', 'casual', 'registered', 'temp_avg', 'temp_min', 'temp_max', 'wt_fog', 'wt_heavy_fog', 'wt_thunder', 'wt_sleet', 'wt_hail', 'wt_glaze', 'wt_haze', 'wt_drift_snow', 'wt_high_wind', 'wt_mist', 'wt_drizzle', 'wt_rain', 'wt_freeze_rain', 'wt_snow', 'wt_ground_fog', 'wt_ice_fog', 'wt_freeze_drizzle', 'wt_unknown', 'holiday'])
+
+"""Normalisasi Data Dengan Min Max Scaler"""
+
+# Min Max Scaler
+
+df[['temp_observ', 'total_cust']] = preprocessing.MinMaxScaler().fit_transform(df[['temp_observ', 'total_cust']].values)
 
 """Menghilangkan outlier pada target data, dan visualisasi ulang data untuk melihat sekilas data"""
 
@@ -112,17 +77,13 @@ plt.title('Total Customer',
 
 temp = df['total_cust']
 
-"""Drop kolom yang tidak akan digunakan setelah melihat hasil visualisasi"""
-
-df = df.drop(columns=['precip'])
-
 """Split Data train dan data test"""
 
 data_latih, data_test = train_test_split(temp, test_size=0.2, shuffle=False)
 
 """Lihat estimasi threshold mae untuk evaluasi model"""
 
-threshold_mae = (df['total_cust'].max() - df['total_cust'].min()) * 30/100
+threshold_mae = (df['total_cust'].max() - df['total_cust'].min()) * 20/100
 threshold_mae
 
 """Untuk mengambil kumpulan data dan mempartisinya sesuai dengan parameter yang dimasukan"""
@@ -141,8 +102,8 @@ def windowed_dataset(series, window_size, batch_size, shuffle_buffer):
 train_set = windowed_dataset(data_latih, window_size=20, batch_size=600, shuffle_buffer=1000)
 test_set = windowed_dataset(data_test, window_size=20, batch_size=600, shuffle_buffer=1000)
 model = tf.keras.models.Sequential([
-  tf.keras.layers.LSTM(64, return_sequences=True),
-  tf.keras.layers.Dropout(0.2),
+  tf.keras.layers.LSTM(128, return_sequences=True),
+  tf.keras.layers.Dropout(0.6),
   tf.keras.layers.Dense(32, activation="relu"),
   tf.keras.layers.Dense(1, activation="relu"),
 ])
@@ -151,19 +112,19 @@ model = tf.keras.models.Sequential([
 
 class myCallback(tf.keras.callbacks.Callback):
   def on_epoch_end(self, epoch, logs={}):
-    threshold_mae = (df['total_cust'].max() - df['total_cust'].min()) * 30/100
+    threshold_mae = (df['total_cust'].max() - df['total_cust'].min()) * 20/100
     if(logs.get('val_mae')<threshold_mae):
-      print("\nMAE < 30%")
+      print("\nMAE < 20%")
       self.model.stop_training = True
 callbacks = myCallback()
 
 """Eksekusi model"""
 
-optimizer = tf.keras.optimizers.SGD(learning_rate=1.0000e-02, momentum=0.5)
+optimizer = tf.keras.optimizers.SGD(learning_rate=1.0000e-03, momentum=0.98)
 model.compile(loss=tf.keras.losses.Huber(),
               optimizer=optimizer,
               metrics=["mae"])
-history = model.fit(train_set,epochs=20, validation_data=(test_set), callbacks=[callbacks])
+history = model.fit(train_set,epochs=30, validation_data=(test_set), callbacks=[callbacks])
 
 """Visualisasi MAE model"""
 
